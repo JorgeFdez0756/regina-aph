@@ -66,6 +66,8 @@ También se prueba una pantalla de 320 × 480 con texto al doble de tamaño.
 
 Las pruebas Dart del canal usan un sustituto de la plataforma: no prueban por sí
 solas la reproducción física del altavoz ni el almacenamiento de un dispositivo.
-La compilación Android se verifica por separado en GitHub Actions. El Redmi Note 11
+La compilación Android se verifica por separado en GitHub Actions. Antes de publicar,
+`scripts/verify_apk.py` comprueba el ZIP del APK, el código Android, Material Icons
+y la presencia y contenido exacto de los cuatro sonidos WAV. El Redmi Note 11
 es el dispositivo de referencia; no afirmar que una versión nueva se probó allí
 sin una prueba real del APK.

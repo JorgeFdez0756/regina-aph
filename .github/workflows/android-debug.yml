@@ -80,6 +80,9 @@ jobs:
               print(f'::error title=Diagnóstico Android::{message}')
           PY
 
+      - name: Verificar contenido del APK
+        run: python3 scripts/verify_apk.py build/app/outputs/flutter-apk/app-debug.apk
+
       - name: Preparar descarga
         run: |
           mkdir -p dist

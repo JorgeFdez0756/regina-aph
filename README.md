@@ -42,6 +42,7 @@ de esa ejecución si fallaron las pruebas o la compilación.
 El workflow prepara Flutter **3.29.3** estable con Dart **3.7.2**, Java **17** y el
 SDK Android. Ejecuta resolución de dependencias, formato, análisis estático,
 pruebas de widgets con cobertura y `flutter build apk --debug --no-pub`.
+También verifica la integridad del APK, los iconos y los cuatro sonidos empaquetados.
 Después publica un APK universal (sin elegir arquitectura) y su checksum SHA-256.
 La cobertura se descarga por separado como **regina-test-coverage**.
 No necesita secretos del proyecto ni credenciales de firma de producción.
