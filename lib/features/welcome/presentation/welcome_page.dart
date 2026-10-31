@@ -38,7 +38,8 @@ class WelcomePage extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   const Text(
-                    'Acompaña a Regina a descubrir un mundo lleno de curiosidad.',
+                    'Acompaña a Regina a descubrir un mundo '
+                    'lleno de curiosidad.',
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 32),

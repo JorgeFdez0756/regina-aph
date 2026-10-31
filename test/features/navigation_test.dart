@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:las_aventuras_de_regina/app/regina_app.dart';
 
 void main() {
-  testWidgets('muestra la bienvenida y permite explorar y volver', (tester) async {
+  testWidgets('permite explorar desde la bienvenida y volver', (tester) async {
     await tester.pumpWidget(const ReginaApp());
 
     expect(find.text('Las Aventuras de Regina'), findsOneWidget);
