@@ -40,7 +40,10 @@ jobs:
 
       - name: Instalar componentes Android
         # El runner oficial ubuntu-24.04 ya incluye SDK y command-line tools.
-        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0' 'ndk;26.1.10909125'
+        run: |
+          SDK_MANAGER=$(find "${ANDROID_HOME:?}/cmdline-tools" -type f -path '*/bin/sdkmanager' -print -quit)
+          test -x "$SDK_MANAGER"
+          "$SDK_MANAGER" 'platforms;android-35' 'build-tools;35.0.0' 'ndk;26.1.10909125'
 
       - name: Comprobar versiones
         run: |
@@ -95,6 +98,14 @@ jobs:
               echo '```diff'
               git diff -- lib test
               echo '```'
+              python3 - <<'PY'
+          import subprocess
+          import sys
+          diff = subprocess.check_output(['git', 'diff', '--', 'lib', 'test'], text=True)
+          if diff:
+              message = diff.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+              print(f'::warning title=Formato sugerido::{message}', file=sys.stderr)
+          PY
             fi
             if test -f pubspec.lock; then
               echo '<details><summary>Dependencias resueltas (pubspec.lock)</summary>'
