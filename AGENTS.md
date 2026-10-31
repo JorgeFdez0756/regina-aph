@@ -1,8 +1,8 @@
-# Las Aventuras de Regina
+# Regina y Nuny
 
 Videojuego educativo para Android. El idioma de la interfaz y la documentación
-es español. Esta primera versión prepara la aplicación; no desarrollar todavía
-el juego completo sin una nueva tarea.
+es español. La fase actual incluye el Bosque mágico y dos minijuegos. Ampliar por
+funcionalidades sin romper progreso, accesibilidad ni funcionamiento offline.
 
 ## Trabajar completamente en la nube
 
@@ -53,3 +53,16 @@ No afirmar que existe un artifact sin haber observado una ejecución correcta.
 - No añadir anuncios, analítica, cuentas ni recopilar datos de menores como parte
   de esta preparación.
 - El APK actual es de depuración, no una publicación en Google Play.
+
+## Mundo jugable
+
+- Reglas y contenido en `docs/game-world.md`; recursos originales en
+  `docs/resources.md`. No incorporar imágenes o audios sin licencia compatible.
+- Mantener preguntas, progresión y serialización en `features/world/domain/`,
+  sin dependencia de widgets. Inyectar Random, repositorio y audio en pruebas.
+- No penalizar intentos ni duplicar recompensas al repetir un nivel.
+- El canal Android `regina/world` usa JSON versionado y recursos WAV precargados.
+  No añadir plugins si las APIs existentes resuelven la necesidad.
+- Cambiar formatos persistidos requiere migración y pruebas de restauración.
+- Mantener el identificador Android `com.regina.aventuras` y la versión creciente.
+- No afirmar pruebas físicas en el Redmi Note 11 basándose en pruebas de widgets.

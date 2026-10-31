@@ -37,10 +37,9 @@ no necesita un servidor persistente ni una base de datos.
 
 ## Pruebas incluidas
 
-- Bienvenida, entrada a la exploración y regreso al inicio.
-- Regreso mediante la navegación del sistema.
-- Navegación en pantalla de 320 × 480 con texto ampliado al doble.
+Consulta [docs/game-world.md](game-world.md) para la cobertura del mundo jugable.
+Las pruebas incluyen ambos minijuegos, preguntas aleatorias, progresión, guardado,
+fallos de almacenamiento, sonido y recorrido completo con reinicio.
 
-Las pruebas de widgets no sustituyen una prueba del APK en un dispositivo.
-La primera compilación Android y el comportamiento en un teléfono deben reportarse
-por separado; no se deben dar por válidos solo porque los archivos estén creados.
+Las pruebas de widgets y los sustitutos del canal nativo no prueban el altavoz ni
+un dispositivo físico. La compilación Android se verifica por separado en Actions.

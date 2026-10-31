@@ -7,7 +7,7 @@ abstract final class ReginaTheme {
     scaffoldBackgroundColor: const Color(0xFFFFFBF3),
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(
-        minimumSize: const Size(48, 56),
+        minimumSize: const Size(64, 64),
         padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 16),
       ),
     ),

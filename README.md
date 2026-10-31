@@ -1,11 +1,14 @@
-# Las Aventuras de Regina
+# Regina y Nuny — Bosque mágico
 
 Base de un videojuego educativo para Android, creado con Flutter y desarrollado
 completamente en **Codex Cloud y GitHub Actions**. No necesitas instalar ninguna
 herramienta de desarrollo en tu computadora.
 
-La primera versión contiene una bienvenida, una pantalla de exploración y
-navegación de regreso. Todavía no incluye retos, puntuaciones ni el juego completo.
+La versión 0.2.0 contiene un bosque ilustrado, seis paradas con desbloqueo
+progresivo y dos minijuegos: contar estrellas del 1 al 5 y reconocer las letras de
+REGINA, empezando por R. Regina y su perrita Nuny reaccionan con animaciones,
+celebraciones y pistas amables. El progreso y la configuración de sonido se guardan
+localmente. Se puede volver al mapa y repetir las actividades sin penalización.
 La aplicación funciona sin conexión y no requiere cuentas ni servicios externos.
 
 ## Descargar el APK usando solo el navegador
@@ -50,14 +53,20 @@ lib/
   main.dart
   app/regina_app.dart
   core/theme/regina_theme.dart
+  core/widgets/                   Bosque, personajes y componentes compartidos
+  core/audio/                     Contrato de efectos sonoros
   features/
     welcome/presentation/welcome_page.dart
     adventure/presentation/adventure_page.dart
-test/features/navigation_test.dart
+    world/                        Reglas, progreso, repositorio y minijuegos
+test/                             Navegación, lógica, progreso y canal Android
 android/                         Proyecto Android y wrapper Gradle
 .github/workflows/               Compilación y artifacts
 scripts/check.sh                 Checks compartidos de cloud y CI
 ```
+
+Consulta [el mundo jugable](docs/game-world.md) y [los recursos originales](docs/resources.md)
+para conocer contenido, guardado, pruebas y qué ilustraciones siguen siendo provisionales.
 
 Las futuras actividades pueden añadirse como funcionalidades independientes.
 No se ha incorporado un motor de juego ni un gestor de estado adicional todavía.
