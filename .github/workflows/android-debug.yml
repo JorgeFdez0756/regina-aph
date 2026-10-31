@@ -63,7 +63,22 @@ jobs:
         run: flutter test --coverage
 
       - name: Compilar APK de depuración
-        run: flutter build apk --debug --no-pub
+        run: |
+          set -o pipefail
+          flutter build apk --debug --no-pub 2>&1 | tee "$RUNNER_TEMP/regina-build.log"
+
+      - name: Anotar fallo de compilación
+        if: failure()
+        run: |
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          log = Path(os.environ['RUNNER_TEMP']) / 'regina-build.log'
+          if log.exists():
+              tail = '\n'.join(log.read_text(errors='replace').splitlines()[-100:])
+              message = tail.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+              print(f'::error title=Diagnóstico Android::{message}')
+          PY
 
       - name: Preparar descarga
         run: |
