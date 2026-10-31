@@ -66,3 +66,14 @@ No afirmar que existe un artifact sin haber observado una ejecución correcta.
 - Cambiar formatos persistidos requiere migración y pruebas de restauración.
 - Mantener el identificador Android `com.regina.aventuras` y la versión creciente.
 - No afirmar pruebas físicas en el Redmi Note 11 basándose en pruebas de widgets.
+
+## Voz y premios (0.3.0)
+
+- `docs/voice-and-rewards.md` describe el flujo y la verificación.
+- Narrar con `GameShell.instructions` y `GameController.narrate`; no apilar voces
+  de rutas anteriores. El botón Escuchar repite sin reiniciar el reto.
+- No depender de TTS instalado ni de Internet: el catálogo y sus WAV están incluidos.
+- La voz sintética es provisional; mantener los IDs al sustituir grabaciones.
+- Guardado formato 2 compatible con formato 1. Premios derivados de niveles y
+  accesorio validado: no duplicar premios ni quitar estrellas al cambiarlo.
+- Inspiración general pop y dinosaurios: personajes, iconos y dibujos originales.

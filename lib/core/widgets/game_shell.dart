@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../features/world/presentation/game_controller.dart';
 import 'forest_art.dart';
@@ -13,17 +14,76 @@ class GameScope extends InheritedNotifier<GameController> {
       context.dependOnInheritedWidgetOfExactType<GameScope>()!.notifier!;
 }
 
-class GameShell extends StatelessWidget {
-  const GameShell({super.key, required this.title, required this.child});
+class GameShell extends StatefulWidget {
+  const GameShell({
+    super.key,
+    required this.title,
+    required this.child,
+    this.instructions = const [],
+  });
   final String title;
   final Widget child;
+  final List<String> instructions;
+  @override
+  State<GameShell> createState() => _GameShellState();
+}
+
+class _GameShellState extends State<GameShell> {
+  GameController? _game;
+  bool _visible = false;
+  List<String>? _last;
+  int _revision = 0;
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _game = GameScope.of(context);
+    final visible = ModalRoute.of(context)?.isCurrent ?? true;
+    if (!visible) {
+      _visible = false;
+      _revision++;
+      _last = null;
+      _game!.releaseVoice(this);
+    } else {
+      _visible = true;
+      _game!.claimVoice(this);
+      _schedule();
+    }
+  }
+
+  @override
+  void didUpdateWidget(GameShell old) {
+    super.didUpdateWidget(old);
+    if (!listEquals(old.instructions, widget.instructions)) _schedule();
+  }
+
+  void _schedule() {
+    if (!_visible ||
+        widget.instructions.isEmpty ||
+        listEquals(_last, widget.instructions))
+      return;
+    final clips = List<String>.of(widget.instructions);
+    _last = clips;
+    final revision = ++_revision;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _visible && revision == _revision)
+        _game!.narrate(clips, owner: this);
+    });
+  }
+
+  @override
+  void dispose() {
+    _revision++;
+    _game?.releaseVoice(this);
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final game = GameScope.of(context);
     return Scaffold(
-      extendBodyBehindAppBar: true,
+      extendBodyBehindAppBar: false,
       appBar: AppBar(
-        title: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis),
+        title: Text(widget.title, maxLines: 1, overflow: TextOverflow.ellipsis),
         leading:
             Navigator.canPop(context)
                 ? IconButton(
@@ -72,7 +132,39 @@ class GameShell extends StatelessWidget {
                     'Los sonidos descansan. ¡Podemos seguir jugando!',
                   ),
                 ),
-              Expanded(child: child),
+              if (widget.instructions.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 6,
+                  ),
+                  child: Tooltip(
+                    message: 'Repetir instrucciones',
+                    child: FilledButton.tonalIcon(
+                      key: const ValueKey('repeat-voice'),
+                      style: FilledButton.styleFrom(
+                        minimumSize: const Size(180, 60),
+                      ),
+                      onPressed:
+                          () => game.repeatInstructions(
+                            widget.instructions,
+                            this,
+                          ),
+                      icon: const Icon(
+                        Icons.record_voice_over_rounded,
+                        size: 30,
+                      ),
+                      label: const Text(
+                        'Escuchar',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              Expanded(child: widget.child),
             ],
           ),
         ),

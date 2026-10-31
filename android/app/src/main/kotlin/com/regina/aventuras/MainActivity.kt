@@ -12,6 +12,9 @@ import java.util.concurrent.Executors
 /** Recursos y preferencias privados, sin red ni permisos de almacenamiento. */
 class MainActivity : FlutterActivity() {
     private var sounds: SoundPool? = null
+    private var voice: OfflineVoice? = null
+    private var foreground = false
+    private var speaking = false
     private val samples = mutableMapOf<String, Int>()
     private val ready = mutableSetOf<Int>()
     private val pending = mutableListOf<Int>()
@@ -26,6 +29,10 @@ class MainActivity : FlutterActivity() {
                 .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION).build()
         ).build()
         sounds = pool
+        voice = OfflineVoice(this) { isSpeaking ->
+            speaking = isSpeaking
+            streams.forEach { pool.setVolume(it, if (isSpeaking) 0.18f else 0.65f, if (isSpeaking) 0.18f else 0.65f) }
+        }
         pool.setOnLoadCompleteListener { _, id, status ->
             if (status == 0) {
                 ready.add(id)
@@ -74,14 +81,23 @@ class MainActivity : FlutterActivity() {
                             result.success(null)
                         }
                     }
-                    "stopSound" -> { stopSounds(); result.success(null) }
+                    "speak" -> {
+                        val ids = (call.arguments as? List<*>)?.filterIsInstance<String>()
+                        if (ids == null || ids.isEmpty() || ids.size > 6 || ids.any { !VoiceCatalog.clips.containsKey(it) }) {
+                            result.error("voice", "Frase no disponible", null)
+                        } else { voice?.speak(ids); result.success(null) }
+                    }
+                    "stopVoice" -> { voice?.stop(); result.success(null) }
+                    "stopSound" -> { voice?.stop(); stopSounds(); result.success(null) }
                     else -> result.notImplemented()
                 }
             }
     }
 
     private fun play(id: Int) {
-        val stream = sounds?.play(id, 0.65f, 0.65f, 1, 0, 1f) ?: 0
+        if (!foreground) return
+        val volume = if (speaking) 0.18f else 0.65f
+        val stream = sounds?.play(id, volume, volume, 1, 0, 1f) ?: 0
         streams.add(stream)
         if (streams.size > 16) streams.removeAt(0)
     }
@@ -90,8 +106,10 @@ class MainActivity : FlutterActivity() {
         streams.forEach { sounds?.stop(it) }
         streams.clear()
     }
-    override fun onPause() { stopSounds(); super.onPause() }
+    override fun onResume() { super.onResume(); foreground = true; voice?.resume() }
+    override fun onPause() { foreground = false; voice?.pause(); stopSounds(); super.onPause() }
     override fun onDestroy() {
+        voice?.stop(); voice = null
         stopSounds(); sounds?.release(); sounds = null
         disk.shutdown()
         super.onDestroy()

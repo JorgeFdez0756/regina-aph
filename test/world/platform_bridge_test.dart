@@ -31,12 +31,14 @@ void main() {
       final repo = AndroidProgressRepository();
       expect((await repo.load()).stars, 0);
       await repo.save(GameProgress().complete(1).withSound(false));
-      expect(jsonDecode(stored!)['version'], 1);
+      expect(jsonDecode(stored!)['version'], 2);
       final restored = await AndroidProgressRepository().load();
       expect(restored.stars, 3);
       expect(restored.soundEnabled, isFalse);
       await AndroidGameAudio().play(GameSound.correct);
       await AndroidGameAudio().stop();
+      await AndroidGameAudio().speak(['letters', 'l_r']);
+      await AndroidGameAudio().stopVoice();
       expect(
         methods,
         containsAllInOrder([
@@ -45,6 +47,8 @@ void main() {
           'loadProgress',
           'playSound',
           'stopSound',
+          'speak',
+          'stopVoice',
         ]),
       );
     },

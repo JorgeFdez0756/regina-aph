@@ -26,6 +26,19 @@ class MemoryProgressRepository implements ProgressRepository {
 class FakeAudio implements GameAudio {
   final played = <GameSound>[];
   int stops = 0;
+  final spoken = <List<String>>[];
+  int voiceStops = 0;
+  @override
+  Future<void> speak(List<String> clips) async {
+    if (fail) throw StateError("voice");
+    spoken.add(List.of(clips));
+  }
+
+  @override
+  Future<void> stopVoice() async {
+    voiceStops++;
+  }
+
   bool fail = false;
   @override
   Future<void> play(GameSound sound) async {

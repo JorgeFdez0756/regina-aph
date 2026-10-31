@@ -29,7 +29,9 @@ El botón de sonido está disponible en inicio, mapa y actividades.
 ## Guardado
 
 Android almacena un JSON privado mediante SharedPreferences, con versión de formato.
-Guarda niveles, estrellas, sonido e intentos/aciertos por letra y cantidad.
+Guarda niveles, estrellas, sonido, accesorio elegido e intentos/aciertos por letra
+y cantidad. El formato 2 lee y migra el formato 1 de la versión anterior sin perder
+esos datos. Los premios disponibles se derivan de las paradas completadas.
 Las escrituras se serializan; el disco se usa fuera del hilo de interfaz.
 Al interrumpir una parada se conservan los datos de aprendizaje ya guardados, pero
 la próxima visita comienza sus retos desde el principio. No se desbloquea un nivel
@@ -53,8 +55,9 @@ de sonido permite seguir jugando. No hay sincronización ni recopilación de dat
   Se reproducen con SoundPool y se detienen al salir de la app o silenciarla.
 - `docs/resources.md`: procedencia y licencia de estos recursos.
 
-Los personajes y sonidos son provisionales. No hay voces narradas, sprites finales,
-música continua ni más mundos. Esta versión usa pistas visuales, iconos y cantidades
+Los personajes, efectos y la voz sintética son provisionales. La versión 0.3.0 añade
+narración offline, caricias y premios; consultar `voice-and-rewards.md`. No hay
+sprites finales, música continua ni más mundos. Esta versión usa pistas visuales, iconos y cantidades
 para acompañar a una niña que todavía no lee.
 
 ## Verificación en cloud

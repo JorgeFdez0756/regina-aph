@@ -2,6 +2,7 @@
 from pathlib import Path
 import hashlib
 import io
+import json
 import sys
 import wave
 import zipfile
@@ -18,10 +19,14 @@ def verify(apk: Path) -> None:
             raise ValueError('El APK no contiene manifiesto o código Android')
         if not any('MaterialIcons' in name for name in names):
             raise ValueError('No se empaquetaron los iconos de la interfaz')
-        for sound in ['tap', 'correct', 'hint', 'complete']:
+        catalog = json.loads((Path(__file__).resolve().parents[1] / 'scripts/voice/lines.json').read_text())
+        expected = ['tap', 'correct', 'hint', 'complete'] + [f'voice_{key}' for key in catalog]
+        for sound in expected:
             matches = [name for name in names if name.endswith(f'/raw/{sound}.wav')]
             if len(matches) != 1:
                 raise ValueError(f'Falta el sonido {sound}')
+            if archive.getinfo(matches[0]).compress_type != zipfile.ZIP_STORED:
+                raise ValueError(f'El audio {sound} debe permitir lectura directa por Android')
             content = archive.read(matches[0])
             if content != (sources / f'{sound}.wav').read_bytes():
                 raise ValueError(f'El sonido {sound} no coincide con el original')

@@ -2,7 +2,7 @@
     <application
         android:label="Regina y Nuny"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@drawable/ic_nuny">
         <activity
             android:name=".MainActivity"
             android:exported="true"

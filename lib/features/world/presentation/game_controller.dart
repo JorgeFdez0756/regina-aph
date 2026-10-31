@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import '../../../core/audio/game_audio.dart';
@@ -15,6 +16,49 @@ class GameController extends ChangeNotifier {
   bool saveFailed = false;
   bool audioFailed = false;
   bool _disposed = false;
+  Object? _voiceOwner;
+  void claimVoice(Object owner) {
+    _voiceOwner = owner;
+  }
+
+  void releaseVoice(Object owner) {
+    if (identical(_voiceOwner, owner)) {
+      _voiceOwner = null;
+      unawaited(_stopVoice());
+    }
+  }
+
+  Future<void> _stopVoice() async {
+    try {
+      await audio.stopVoice();
+    } catch (_) {
+      /* No impedir la navegación. */
+    }
+  }
+
+  Future<void> narrate(List<String> clips, {Object? owner}) async {
+    if (_disposed ||
+        !progress.soundEnabled ||
+        (owner != null && !identical(owner, _voiceOwner)))
+      return;
+    try {
+      await audio.speak(clips);
+    } catch (_) {
+      audioFailed = true;
+      _notify();
+    }
+  }
+
+  Future<void> repeatInstructions(List<String> clips, Object owner) async {
+    if (!progress.soundEnabled) await toggleSound();
+    await narrate(clips, owner: owner);
+  }
+
+  Future<void> wear(int id) {
+    progress = progress.wear(id);
+    return _save();
+  }
+
   Future<void> _writes = Future.value();
 
   void _notify() {
@@ -88,6 +132,7 @@ class GameController extends ChangeNotifier {
   @override
   void dispose() {
     _disposed = true;
+    unawaited(_stopVoice());
     super.dispose();
   }
 }

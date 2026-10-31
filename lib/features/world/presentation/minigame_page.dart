@@ -1,9 +1,13 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import '../../../core/audio/game_audio.dart';
+import '../../../core/audio/voice_cue.dart';
+import '../../../core/widgets/companion.dart';
 import '../../../core/widgets/forest_art.dart';
 import '../../../core/widgets/game_shell.dart';
 import '../domain/world.dart';
+import '../domain/rewards.dart';
+import 'rewards_page.dart';
 
 class MinigamePage extends StatefulWidget {
   const MinigamePage({super.key, required this.level, this.random});
@@ -46,6 +50,21 @@ class _MinigamePageState extends State<MinigamePage> {
   @override
   Widget build(BuildContext context) => GameShell(
     title: widget.level.title,
+    instructions:
+        completed
+            ? [
+              widget.level.id == forestLevels.last.id ? 'all_done' : 'complete',
+              'r${widget.level.id}',
+            ]
+            : session.answered
+            ? const ['correct', 'next']
+            : session.hintVisible
+            ? session.question.kind == ActivityKind.counting
+                ? const ['hint_counting']
+                : VoiceCue.hintLetter(session.question.answer)
+            : session.question.kind == ActivityKind.counting
+            ? VoiceCue.counting
+            : VoiceCue.letter(session.question.answer),
     child: SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
       child: Center(
@@ -59,7 +78,7 @@ class _MinigamePageState extends State<MinigamePage> {
 
   Widget _completion() => Column(
     children: [
-      const FriendsScene(mood: FriendsMood.happy, height: 210),
+      const NunyCompanion(mood: FriendsMood.happy, height: 210),
       MagicCard(
         child: Column(
           children: [
@@ -79,6 +98,45 @@ class _MinigamePageState extends State<MinigamePage> {
               style: const TextStyle(fontSize: 20),
             ),
           ],
+        ),
+      ),
+      const SizedBox(height: 18),
+      TweenAnimationBuilder<double>(
+        tween: Tween(begin: .65, end: 1),
+        duration:
+            MediaQuery.disableAnimationsOf(context)
+                ? Duration.zero
+                : const Duration(milliseconds: 800),
+        curve: Curves.elasticOut,
+        builder:
+            (context, scale, child) =>
+                Transform.scale(scale: scale, child: child),
+        child: MagicCard(
+          child: Column(
+            children: [
+              RewardSticker(id: widget.level.id, size: 108),
+              const SizedBox(height: 10),
+              Text(
+                nunyRewards[widget.level.id - 1].name,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 14),
+              AdventureButton(
+                label: 'Ver mi premio',
+                icon: Icons.card_giftcard_rounded,
+                onPressed:
+                    () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => const RewardsPage(),
+                      ),
+                    ),
+              ),
+            ],
+          ),
         ),
       ),
       const SizedBox(height: 24),
@@ -116,8 +174,21 @@ class _MinigamePageState extends State<MinigamePage> {
             ),
           ),
         ),
-        FriendsScene(
+        NunyCompanion(
           height: 155,
+          helping: hint && !correct,
+          help:
+              hint && !correct
+                  ? question.kind == ActivityKind.counting
+                      ? [
+                        'hint_counting',
+                        ...List.generate(
+                          question.starCount,
+                          (i) => 'n${i + 1}',
+                        ),
+                      ]
+                      : VoiceCue.hintLetter(question.answer)
+                  : const ['friend'],
           mood:
               correct
                   ? FriendsMood.happy
@@ -148,6 +219,7 @@ class _MinigamePageState extends State<MinigamePage> {
                     touchedStar = index;
                   });
                   GameScope.of(context).sound(GameSound.tap);
+                  GameScope.of(context).narrate(VoiceCue.number(index + 1));
                 },
               ),
               const SizedBox(height: 16),

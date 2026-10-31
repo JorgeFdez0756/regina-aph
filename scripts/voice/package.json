@@ -1,0 +1,6 @@
+{
+  "private": true,
+  "type": "module",
+  "scripts": { "generate": "node generate.mjs" },
+  "dependencies": { "@echogarden/espeak-ng-emscripten": "0.3.5" }
+}

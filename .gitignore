@@ -11,3 +11,5 @@ coverage/
 .DS_Store
 *.log
 .env
+**/node_modules/
+__pycache__/

@@ -4,11 +4,14 @@ Base de un videojuego educativo para Android, creado con Flutter y desarrollado
 completamente en **Codex Cloud y GitHub Actions**. No necesitas instalar ninguna
 herramienta de desarrollo en tu computadora.
 
-La versión 0.2.0 contiene un bosque ilustrado, seis paradas con desbloqueo
+La versión 0.3.0 contiene un bosque ilustrado, seis paradas con desbloqueo
 progresivo y dos minijuegos: contar estrellas del 1 al 5 y reconocer las letras de
 REGINA, empezando por R. Regina y su perrita Nuny reaccionan con animaciones,
 celebraciones y pistas amables. El progreso y la configuración de sonido se guardan
 localmente. Se puede volver al mapa y repetir las actividades sin penalización.
+Ahora incluye narración española offline, botón **Escuchar**, números y letras
+hablados, caricias a Nuny y un álbum de seis premios con accesorios que se pueden
+elegir. Hay un dino amistoso y detalles de heroína pop originales.
 La aplicación funciona sin conexión y no requiere cuentas ni servicios externos.
 
 ## Descargar el APK usando solo el navegador
@@ -42,7 +45,7 @@ de esa ejecución si fallaron las pruebas o la compilación.
 El workflow prepara Flutter **3.29.3** estable con Dart **3.7.2**, Java **17** y el
 SDK Android. Ejecuta resolución de dependencias, formato, análisis estático,
 pruebas de widgets con cobertura y `flutter build apk --debug --no-pub`.
-También verifica la integridad del APK, los iconos y los cuatro sonidos empaquetados.
+También verifica la integridad del APK, los iconos y los cuatro efectos y los 31 clips de voz empaquetados.
 Después publica un APK universal (sin elegir arquitectura) y su checksum SHA-256.
 La cobertura se descarga por separado como **regina-test-coverage**.
 No necesita secretos del proyecto ni credenciales de firma de producción.
@@ -74,3 +77,6 @@ No se ha incorporado un motor de juego ni un gestor de estado adicional todavía
 
 Consulta [AGENTS.md](AGENTS.md) para las instrucciones de desarrollo y
 [docs/cloud-development.md](docs/cloud-development.md) para preparar Codex Cloud.
+
+Consulta [voz, compañía y premios](docs/voice-and-rewards.md) para probar las novedades
+y conocer las limitaciones de la voz provisional.

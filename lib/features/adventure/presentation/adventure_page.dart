@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../../core/audio/game_audio.dart';
-import '../../../core/widgets/forest_art.dart';
+import '../../../core/audio/voice_cue.dart';
+import '../../../core/widgets/companion.dart';
 import '../../../core/widgets/game_shell.dart';
 import '../../world/domain/world.dart';
 import '../../world/presentation/minigame_page.dart';
+import '../../world/presentation/rewards_page.dart';
 
 class AdventurePage extends StatelessWidget {
   const AdventurePage({super.key});
@@ -12,6 +14,7 @@ class AdventurePage extends StatelessWidget {
     final game = GameScope.of(context);
     return GameShell(
       title: 'Bosque mágico',
+      instructions: VoiceCue.map,
       child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 40),
         child: Center(
@@ -19,7 +22,7 @@ class AdventurePage extends StatelessWidget {
             constraints: const BoxConstraints(maxWidth: 560),
             child: Column(
               children: [
-                const FriendsScene(height: 145),
+                const NunyCompanion(height: 145),
                 MagicCard(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -42,6 +45,17 @@ class AdventurePage extends StatelessWidget {
                       ),
                     ],
                   ),
+                ),
+                const SizedBox(height: 20),
+                AdventureButton(
+                  label: 'Premios de Nuny',
+                  icon: Icons.card_giftcard_rounded,
+                  onPressed:
+                      () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => const RewardsPage(),
+                        ),
+                      ),
                 ),
                 const SizedBox(height: 20),
                 for (final level in forestLevels) ...[
@@ -165,7 +179,9 @@ class _LevelStone extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '${level.id}. ${level.title}',
+                    '${level.id}. ${level.kind == ActivityKind.counting ? 'Estrellas' : 'Letras'}',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -176,7 +192,7 @@ class _LevelStone extends StatelessWidget {
                     const EarnedStars(size: 24)
                   else
                     Text(
-                      unlocked ? '¡Vamos, Nuny!' : 'Sigue el sendero',
+                      unlocked ? '¡Jugar!' : 'Pronto',
                       style: const TextStyle(fontSize: 15),
                     ),
                 ],

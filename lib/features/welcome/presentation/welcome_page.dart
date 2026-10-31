@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import '../../../core/audio/game_audio.dart';
-import '../../../core/widgets/forest_art.dart';
+import '../../../core/audio/voice_cue.dart';
+import '../../../core/widgets/companion.dart';
 import '../../../core/widgets/game_shell.dart';
 import '../../adventure/presentation/adventure_page.dart';
+import '../../world/presentation/rewards_page.dart';
 
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
   @override
   Widget build(BuildContext context) => GameShell(
     title: 'Regina y Nuny',
+    instructions: VoiceCue.welcome,
     child: Center(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
@@ -45,7 +48,44 @@ class WelcomePage extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const FriendsScene(height: 230),
+              const NunyCompanion(height: 200),
+              const SizedBox(height: 24),
+              AdventureButton(
+                label: 'Jugar',
+                icon: Icons.play_arrow_rounded,
+                onPressed: () {
+                  GameScope.of(context).sound(GameSound.tap);
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => const AdventurePage(),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 16),
+              AdventureButton(
+                label: 'Premios de Nuny',
+                icon: Icons.card_giftcard_rounded,
+                onPressed:
+                    () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => const RewardsPage(),
+                      ),
+                    ),
+              ),
+              const SizedBox(height: 16),
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  DinoBuddy(size: 54),
+                  Flexible(
+                    child: Text(
+                      '¡Pequeñas heroínas, grandes aventuras!',
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+              ),
               const MagicCard(
                 child: Column(
                   children: [
@@ -65,20 +105,6 @@ class WelcomePage extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 24),
-              AdventureButton(
-                label: 'Jugar',
-                icon: Icons.play_arrow_rounded,
-                onPressed: () {
-                  GameScope.of(context).sound(GameSound.tap);
-                  Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (_) => const AdventurePage(),
-                    ),
-                  );
-                },
-              ),
-              const SizedBox(height: 16),
               const Text('¡Aprender es una gran aventura!'),
               const SizedBox(height: 8),
               const Text(

@@ -15,12 +15,26 @@ class GameProgress {
     Map<int, int> levelStars = const {},
     Map<String, LearningRecord> learning = const {},
     this.soundEnabled = true,
+    this.accessory = 0,
   }) : levelStars = Map.unmodifiable(levelStars),
        learning = Map.unmodifiable(learning);
 
   final Map<int, int> levelStars;
   final Map<String, LearningRecord> learning;
   final bool soundEnabled;
+  final int accessory;
+
+  GameProgress wear(int id) {
+    if (id < 0 || id > forestLevels.length || (id != 0 && !isCompleted(id)))
+      return this;
+    return GameProgress(
+      levelStars: levelStars,
+      learning: learning,
+      soundEnabled: soundEnabled,
+      accessory: id,
+    );
+  }
+
   int get stars => levelStars.values.fold(0, (sum, value) => sum + value);
   bool isUnlocked(int id) => id == 1 || levelStars.containsKey(id - 1);
   bool isCompleted(int id) => levelStars.containsKey(id);
@@ -29,11 +43,13 @@ class GameProgress {
     levelStars: levelStars,
     learning: learning,
     soundEnabled: enabled,
+    accessory: accessory,
   );
 
   GameProgress record(Question question, bool correct) => GameProgress(
     levelStars: levelStars,
     soundEnabled: soundEnabled,
+    accessory: accessory,
     learning: {
       ...learning,
       question.learningKey: (learning[question.learningKey] ??
@@ -47,13 +63,15 @@ class GameProgress {
       return this;
     return GameProgress(
       levelStars: {...levelStars, id: 3},
+      accessory: isCompleted(id) ? accessory : id,
       learning: learning,
       soundEnabled: soundEnabled,
     );
   }
 
   Map<String, Object> toJson() => {
-    'version': 1,
+    'version': 2,
+    'accessory': accessory,
     'sound': soundEnabled,
     'levels': levelStars.map((key, value) => MapEntry('$key', value)),
     'learning': learning.map(
@@ -63,7 +81,7 @@ class GameProgress {
   };
 
   factory GameProgress.fromJson(Map<String, dynamic> json) {
-    if (json['version'] != 1)
+    if (json['version'] != 1 && json['version'] != 2)
       throw const FormatException('Versión de progreso no compatible');
     final levels = <int, int>{};
     final rawLevels = json['levels'];
@@ -95,7 +113,16 @@ class GameProgress {
         }
       }
     }
+    final savedAccessory = json['version'] == 2 ? json['accessory'] : 0;
+    final accessory =
+        savedAccessory is int &&
+                savedAccessory >= 0 &&
+                savedAccessory <= forestLevels.length &&
+                (savedAccessory == 0 || levels.containsKey(savedAccessory))
+            ? savedAccessory
+            : 0;
     return GameProgress(
+      accessory: accessory,
       levelStars: levels,
       learning: learning,
       soundEnabled: json['sound'] as bool,

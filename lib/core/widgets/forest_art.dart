@@ -10,9 +10,13 @@ class FriendsScene extends StatefulWidget {
     super.key,
     this.mood = FriendsMood.curious,
     this.height = 190,
+    this.accessory = 0,
+    this.helping = false,
   });
   final FriendsMood mood;
   final double height;
+  final int accessory;
+  final bool helping;
   @override
   State<FriendsScene> createState() => _FriendsSceneState();
 }
@@ -55,7 +59,12 @@ class _FriendsSceneState extends State<FriendsScene>
           animation: _motion,
           builder:
               (context, child) => CustomPaint(
-                painter: _FriendsPainter(_motion.value, widget.mood),
+                painter: _FriendsPainter(
+                  _motion.value,
+                  widget.mood,
+                  widget.accessory,
+                  widget.helping,
+                ),
               ),
         ),
       ),
@@ -64,7 +73,9 @@ class _FriendsSceneState extends State<FriendsScene>
 }
 
 class _FriendsPainter extends CustomPainter {
-  _FriendsPainter(this.time, this.mood);
+  _FriendsPainter(this.time, this.mood, this.accessory, this.helping);
+  final int accessory;
+  final bool helping;
   final double time;
   final FriendsMood mood;
   final Paint ink = Paint()..isAntiAlias = true;
@@ -181,21 +192,35 @@ class _FriendsPainter extends CustomPainter {
     );
     ink.style = PaintingStyle.fill;
     canvas.restore();
+    // Destellos y diadema de heroína pop: diseño original.
+    drawStar(canvas, const Offset(157, 26), 9, const Color(0xFFFFDF77));
     // Nuny: orejas grandes de chihuahua y cola que se mueve.
     canvas.save();
     canvas.translate(0, mood == FriendsMood.happy ? -wave.abs() * 10 : 0);
+    final wag = math.sin(time * math.pi * (mood == FriendsMood.happy ? 8 : 2));
     line(
       canvas,
       const Offset(259, 142),
-      Offset(281 + wave * 5, 116 + wave * 8),
+      Offset(281 + wag * 7, 116 + wag * 10),
       0xFFC69160,
       10,
     );
+    if (accessory == 3) {
+      ink.color = const Color(0xFFAB75CE);
+      canvas.drawPath(
+        Path()
+          ..moveTo(217, 138)
+          ..quadraticBezierTo(286, 144, 279, 179)
+          ..lineTo(247, 169)
+          ..close(),
+        ink,
+      );
+    }
     oval(canvas, const Rect.fromLTWH(199, 127, 71, 43), 0xFFDCAA77);
     line(
       canvas,
       const Offset(214, 156),
-      const Offset(209, 179),
+      helping ? Offset(186, 146 + wave * 3) : const Offset(209, 179),
       0xFFC69160,
       10,
     );
@@ -241,6 +266,22 @@ class _FriendsPainter extends CustomPainter {
       ink,
     );
     oval(canvas, const Rect.fromLTWH(198, 94, 66, 58), 0xFFE4B888);
+    if (mood == FriendsMood.surprised) {
+      line(
+        canvas,
+        const Offset(205, 105),
+        const Offset(214, 102),
+        0xFF845F49,
+        2,
+      );
+      line(
+        canvas,
+        const Offset(241, 102),
+        const Offset(251, 105),
+        0xFF845F49,
+        2,
+      );
+    }
     oval(canvas, const Rect.fromLTWH(207, 113, 8, 10), 0xFF453743);
     oval(canvas, const Rect.fromLTWH(242, 113, 8, 10), 0xFF453743);
     oval(canvas, const Rect.fromLTWH(216, 124, 30, 22), 0xFFFFE5C4);
@@ -249,6 +290,78 @@ class _FriendsPainter extends CustomPainter {
       oval(canvas, const Rect.fromLTWH(229, 138, 9, 10), 0xFFF294A7);
     line(canvas, const Offset(211, 150), const Offset(250, 150), 0xFF68BAB4, 6);
     oval(canvas, const Rect.fromLTWH(227, 150, 9, 10), 0xFFFFD66C);
+    if (accessory == 1) {
+      ink.color = const Color(0xFFE87EAC);
+      canvas.drawPath(
+        Path()
+          ..moveTo(250, 98)
+          ..lineTo(234, 86)
+          ..lineTo(234, 107)
+          ..close(),
+        ink,
+      );
+      canvas.drawPath(
+        Path()
+          ..moveTo(250, 98)
+          ..lineTo(265, 85)
+          ..lineTo(267, 106)
+          ..close(),
+        ink,
+      );
+      drawStar(canvas, const Offset(250, 98), 6, const Color(0xFFFFDE74));
+    } else if (accessory == 2) {
+      ink.color = const Color(0xFF79BE94);
+      canvas.drawPath(
+        Path()
+          ..moveTo(209, 146)
+          ..lineTo(252, 146)
+          ..lineTo(229, 171)
+          ..close(),
+        ink,
+      );
+      for (var i = 0; i < 3; i++) {
+        oval(canvas, Rect.fromLTWH(219 + i * 5, 150, 4, 6), 0xFFD3E88D);
+      }
+    } else if (accessory == 4) {
+      for (var i = 0; i < 5; i++) {
+        final angle = i * math.pi * 2 / 5;
+        oval(
+          canvas,
+          Rect.fromCenter(
+            center: Offset(251 + math.cos(angle) * 7, 96 + math.sin(angle) * 7),
+            width: 10,
+            height: 10,
+          ),
+          0xFFFFA8BE,
+        );
+      }
+      oval(canvas, const Rect.fromLTWH(247, 92, 8, 8), 0xFFFFDA75);
+    } else if (accessory == 5) {
+      oval(canvas, const Rect.fromLTWH(222, 149, 20, 20), 0xFFB497E1);
+      line(
+        canvas,
+        const Offset(235, 153),
+        const Offset(235, 161),
+        0xFFFFEEB1,
+        2,
+      );
+      oval(canvas, const Rect.fromLTWH(228, 160, 7, 5), 0xFFFFEEB1);
+    } else if (accessory == 6) {
+      ink.color = const Color(0xFFFFCF60);
+      canvas.drawPath(
+        Path()
+          ..moveTo(211, 96)
+          ..lineTo(207, 77)
+          ..lineTo(220, 86)
+          ..lineTo(230, 71)
+          ..lineTo(240, 86)
+          ..lineTo(253, 77)
+          ..lineTo(249, 96)
+          ..close(),
+        ink,
+      );
+      oval(canvas, const Rect.fromLTWH(226, 85, 8, 8), 0xFFD88CC3);
+    }
     canvas.restore();
     if (mood == FriendsMood.happy) {
       for (var i = 0; i < 5; i++) {
@@ -262,7 +375,10 @@ class _FriendsPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_FriendsPainter old) =>
-      old.time != time || old.mood != mood;
+      old.time != time ||
+      old.mood != mood ||
+      old.accessory != accessory ||
+      old.helping != helping;
 }
 
 void drawStar(Canvas canvas, Offset center, double radius, Color color) {
