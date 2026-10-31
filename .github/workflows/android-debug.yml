@@ -1,0 +1,79 @@
+name: Android Debug APK
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-debug-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Pruebas y APK Android
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - name: Obtener el código
+        uses: actions/checkout@v4
+
+      - name: Preparar Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Leer versión de Flutter
+        id: flutter-version
+        run: echo "version=$(cat .flutter-version)" >> "$GITHUB_OUTPUT"
+
+      - name: Preparar Flutter estable
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ steps.flutter-version.outputs.version }}
+          channel: stable
+          cache: true
+
+      - name: Preparar Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Instalar componentes Android
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0' 'ndk;26.1.10909125'
+
+      - name: Comprobar versiones
+        run: |
+          flutter --version
+          java -version
+
+      - name: Verificar formato, análisis y pruebas
+        run: bash scripts/check.sh
+
+      - name: Compilar APK de depuración
+        run: flutter build apk --debug --no-pub
+
+      - name: Preparar descarga
+        run: |
+          mkdir -p dist
+          cp build/app/outputs/flutter-apk/app-debug.apk dist/las-aventuras-de-regina-debug.apk
+          cd dist
+          sha256sum las-aventuras-de-regina-debug.apk > SHA256SUMS.txt
+
+      - name: Publicar APK descargable
+        uses: actions/upload-artifact@v4
+        with:
+          name: regina-android-debug
+          path: dist/
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Publicar cobertura
+        uses: actions/upload-artifact@v4
+        with:
+          name: regina-test-coverage
+          path: coverage/lcov.info
+          if-no-files-found: error
+          retention-days: 14

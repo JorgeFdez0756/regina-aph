@@ -1,0 +1,19 @@
+name: las_aventuras_de_regina
+description: Una aventura educativa para Android, desarrollada completamente en la nube.
+publish_to: none
+version: 0.1.0+1
+
+environment:
+  sdk: '>=3.7.2 <4.0.0'
+  flutter: '>=3.29.3'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
